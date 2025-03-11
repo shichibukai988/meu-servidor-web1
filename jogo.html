@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedra, Papel e Tesoura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        .choices {
+            margin: 20px 0;
+        }
+        .choices button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .choices button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pedra, Papel e Tesoura</h1>
+    <div class="choices">
+        <button onclick="playGame('pedra')">Pedra</button>
+        <button onclick="playGame('papel')">Papel</button>
+        <button onclick="playGame('tesoura')">Tesoura</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="score">
+        <p>Placar: <span id="playerScore">0</span> - <span id="computerScore">0</span></p>
+    </div>
+
+    <script>
+        let playerScore = 0;
+        let computerScore = 0;
+
+        function playGame(playerChoice) {
+            const choices = ['pedra', 'papel', 'tesoura'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+            let result = '';
+
+            if (playerChoice === computerChoice) {
+                result = 'Empate!';
+            } else if (
+                (playerChoice === 'pedra' && computerChoice === 'tesoura') ||
+                (playerChoice === 'papel' && computerChoice === 'pedra') ||
+                (playerChoice === 'tesoura' && computerChoice === 'papel')
+            ) {
+                result = 'Você ganhou!';
+                playerScore++;
+            } else {
+                result = 'Você perdeu!';
+                computerScore++;
+            }
+
+            document.getElementById('result').innerText = `Você escolheu ${playerChoice}, o computador escolheu ${computerChoice}. ${result}`;
+            document.getElementById('playerScore').innerText = playerScore;
+            document.getElementById('computerScore').innerText = computerScore;
+        }
+    </script>
+</body>
+</html>
