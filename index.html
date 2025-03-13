@@ -16,7 +16,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #0b3d91; /* Fundo espacial padrão */
             color: white;
             height: 100vh;
             display: flex;
@@ -25,10 +25,16 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            transition: background 0.5s, color 0.5s;
         }
 
-        /* Efeito de fundo do Tetris */
-        .tetris-background {
+        body.light-mode {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* Efeito de fundo espacial */
+        .space-background {
             position: absolute;
             top: 0;
             left: 0;
@@ -38,17 +44,25 @@
             z-index: -1;
         }
 
-        .tetris-block {
+        .star {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: rgba(255, 255, 255, 0.1);
-            animation: fall linear infinite;
+            width: 2px;
+            height: 2px;
+            background-color: white; /* Estrelas brancas no tema escuro */
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
         }
 
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
+        body.light-mode .star {
+            background-color: black; /* Estrelas pretas no tema claro */
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
             }
         }
 
@@ -101,6 +115,10 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        body.light-mode .score {
+            background: rgba(0, 0, 0, 0.1); /* Fundo do placar no tema claro */
+        }
+
         /* Animação de fadeIn */
         @keyframes fadeIn {
             from {
@@ -108,6 +126,80 @@
             }
             to {
                 opacity: 1;
+            }
+        }
+
+        /* Efeito de confete */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff0;
+            animation: confetti-fall 2s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Efeito de vibração */
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .vibrate {
+            animation: vibrate 0.3s linear;
+        }
+
+        /* Botão de tema */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animação de escolha */
+        .choice-animation {
+            display: inline-block;
+            font-size: 2rem;
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
             }
         }
 
@@ -135,7 +227,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="tetris-background" id="tetrisBackground"></div>
+    <div class="space-background" id="spaceBackground"></div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
     <h1>Pedra, Papel e Tesoura</h1>
     <div class="choices">
         <button onclick="playGame('pedra')">Pedra</button>
@@ -151,6 +244,7 @@
         let playerScore = 0;
         let computerScore = 0;
 
+        // Função para jogar
         function playGame(playerChoice) {
             const choices = ['pedra', 'papel', 'tesoura'];
             const computerChoice = choices[Math.floor(Math.random() * 3)];
@@ -166,34 +260,66 @@
             ) {
                 result = 'Você ganhou!';
                 playerScore++;
+                createConfetti(); // Confetes ao ganhar
             } else {
                 result = 'Você perdeu!';
                 computerScore++;
+                document.body.classList.add('vibrate'); // Vibração ao perder
+                setTimeout(() => document.body.classList.remove('vibrate'), 300);
             }
 
-            document.getElementById('result').innerText = `Você escolheu ${playerChoice}, o computador escolheu ${computerChoice}. ${result}`;
+            // Animação de escolha
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = `
+                <span class="choice-animation">${playerChoice}</span> vs 
+                <span class="choice-animation">${computerChoice}</span><br>
+                ${result}
+            `;
+
+            // Atualiza o placar
             document.getElementById('playerScore').innerText = playerScore;
             document.getElementById('computerScore').innerText = computerScore;
         }
 
-        // Criação dos blocos caindo (efeito Tetris)
-        const tetrisBackground = document.getElementById('tetrisBackground');
+        // Cria estrelas para o fundo espacial
+        const spaceBackground = document.getElementById('spaceBackground');
 
-        function createBlock() {
-            const block = document.createElement('div');
-            block.classList.add('tetris-block');
-            block.style.left = `${Math.random() * 100}vw`;
-            block.style.animationDuration = `${Math.random() * 3 + 2}s`;
-            tetrisBackground.appendChild(block);
-
-            // Remove o bloco após a animação terminar
-            block.addEventListener('animationend', () => {
-                block.remove();
-            });
+        function createStars() {
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                spaceBackground.appendChild(star);
+            }
         }
 
-        // Cria blocos em intervalos aleatórios
-        setInterval(createBlock, 500);
+        createStars();
+
+        // Efeito de confete ao ganhar
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) { // Confetes reduzidos
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                document.body.appendChild(confetti);
+
+                // Remove o confete após a animação terminar
+                confetti.addEventListener('animationend', () => {
+                    confetti.remove();
+                });
+            }
+        }
+
+        // Alternar entre tema escuro e claro
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const themeButton = document.querySelector('.theme-toggle');
+            themeButton.innerText = document.body.classList.contains('light-mode') ? '🌞 Tema Claro' : '🌙 Tema Escuro';
+        }
     </script>
 </body>
 </html>
