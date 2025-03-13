@@ -231,9 +231,9 @@
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
     <h1>Pedra, Papel e Tesoura</h1>
     <div class="choices">
-        <button onclick="playGame('pedra')">Pedra</button>
-        <button onclick="playGame('papel')">Papel</button>
-        <button onclick="playGame('tesoura')">Tesoura</button>
+        <button onclick="playGame('🪨')">🪨 Pedra</button>
+        <button onclick="playGame('📄')">📄 Papel</button>
+        <button onclick="playGame('✂️')">✂️ Tesoura</button>
     </div>
     <div class="result" id="result"></div>
     <div class="score">
@@ -246,7 +246,7 @@
 
         // Função para jogar
         function playGame(playerChoice) {
-            const choices = ['pedra', 'papel', 'tesoura'];
+            const choices = ['🪨', '📄', '✂️'];
             const computerChoice = choices[Math.floor(Math.random() * 3)];
 
             let result = '';
@@ -254,9 +254,9 @@
             if (playerChoice === computerChoice) {
                 result = 'Empate!';
             } else if (
-                (playerChoice === 'pedra' && computerChoice === 'tesoura') ||
-                (playerChoice === 'papel' && computerChoice === 'pedra') ||
-                (playerChoice === 'tesoura' && computerChoice === 'papel')
+                (playerChoice === '🪨' && computerChoice === '✂️') ||
+                (playerChoice === '📄' && computerChoice === '🪨') ||
+                (playerChoice === '✂️' && computerChoice === '📄')
             ) {
                 result = 'Você ganhou!';
                 playerScore++;
