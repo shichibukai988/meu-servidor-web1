@@ -23,6 +23,33 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Efeito de fundo do Tetris */
+        .tetris-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .tetris-block {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
         }
 
         h1 {
@@ -108,6 +135,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="tetris-background" id="tetrisBackground"></div>
     <h1>Pedra, Papel e Tesoura</h1>
     <div class="choices">
         <button onclick="playGame('pedra')">Pedra</button>
@@ -147,6 +175,25 @@
             document.getElementById('playerScore').innerText = playerScore;
             document.getElementById('computerScore').innerText = computerScore;
         }
+
+        // Criação dos blocos caindo (efeito Tetris)
+        const tetrisBackground = document.getElementById('tetrisBackground');
+
+        function createBlock() {
+            const block = document.createElement('div');
+            block.classList.add('tetris-block');
+            block.style.left = `${Math.random() * 100}vw`;
+            block.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            tetrisBackground.appendChild(block);
+
+            // Remove o bloco após a animação terminar
+            block.addEventListener('animationend', () => {
+                block.remove();
+            });
+        }
+
+        // Cria blocos em intervalos aleatórios
+        setInterval(createBlock, 500);
     </script>
 </body>
 </html>
